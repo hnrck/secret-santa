@@ -5,6 +5,7 @@ A module used to define the participants, create a list of participant from a
 CSV file and shuffling the secret santas.
 """
 from csv import reader
+from random import shuffle
 
 
 class Participant(object):
@@ -76,3 +77,39 @@ def participants_parser(csv_file):
             participants.append(Participant(row[0], row[1]))
 
     return participants
+
+
+def participants_shuffler(participants):
+    """
+    Participants shuffler.
+
+    Args:
+    participants: The list of participants.
+
+    Return:
+        A list couple of participant, where the first one is the secret santa
+        of the second one.
+
+    Raises:
+        AssertionError: Missing argument, or to few participants.
+        TypeError: The argument is no a list of participants.
+    """
+    if participants is None:
+        raise AssertionError('Error: No participants to shuffle :-(')
+
+    if not isinstance(participants, list):
+        raise TypeError('Error: participants arg in participant_shuffler must'
+                        ' be a list of Participant.')
+
+    for participant in participants:
+        if not isinstance(participant, Participant):
+            raise TypeError(
+                'Error:', str(participant), ' is not a Participants.')
+
+    if len(participants) == 1:
+        raise AssertionError('It\'s not fun to play alone :-(')
+
+    shuffle(participants)
+    couples = zip(participants, participants[1:] + [participants[0]])
+
+    return couples
