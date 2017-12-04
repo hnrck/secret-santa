@@ -4,6 +4,7 @@ The participant module
 A module used to define the participants, create a list of participant from a
 CSV file and shuffling the secret santas.
 """
+from csv import reader
 
 
 class Participant(object):
@@ -40,3 +41,38 @@ class Participant(object):
     def __str__(self):
         """ Shows participant info when casted to string. """
         return self.__name + ' (' + self.__mail + ')'
+
+
+def participants_parser(csv_file):
+    """
+    Participants parser.
+
+    Args:
+        csv_file: a CSV file containing the participants name and their mails.
+
+    Return:
+        A list of Participant
+
+    Raises:
+        AssertionError: Argument is null
+        IOError: missing file.
+        TypeError: Argument is not a string
+        ValueError: illformated values in file.
+    """
+    if csv_file is None:
+        raise AssertionError('Error: nothing to parse.')
+
+    if not isinstance(csv_file, str):
+        raise TypeError('Error: csv_file is not a string.')
+
+    participants = []
+
+    with open(csv_file) as csv_lines:
+        csv_rows = reader(csv_lines)
+
+        for row in csv_rows:
+            if len(row) != 2:
+                raise ValueError('Error: illformated csv file.')
+            participants.append(Participant(row[0], row[1]))
+
+    return participants
