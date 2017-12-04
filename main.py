@@ -10,7 +10,9 @@ send messages.
 
 
 from sys import argv, stderr
-from participant import participants_parser, participants_shuffler
+from participant import participants_parser
+from participant import participants_shuffler
+from participant import participants_mail
 
 
 def help_message():
@@ -37,7 +39,8 @@ def main():
         raise AssertionError('Error: The argument might not be a csv file.')
 
     participants = participants_parser(csv_file)
-    _ = participants_shuffler(participants)
+    couples = participants_shuffler(participants)
+    participants_mail(couples)
 
 if __name__ == '__main__':
     try:

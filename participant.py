@@ -6,6 +6,28 @@ CSV file and shuffling the secret santas.
 """
 from csv import reader
 from random import shuffle
+from mailer import send
+
+SUBJECT = 'Hello secret Santa! This is your secret target!'
+
+
+def generate_message(target):
+    """
+    Generate a message for the secret Santa
+
+    Args:
+        target: the name and mail of the secret Santa target
+
+    Returns:
+        message: a string containing the message.
+    """
+    message = ''
+    message += 'Hi secret Santa!\n'
+    message += '\n'
+    message += 'Your target is ' + target + '.'
+    message += '\n'
+    message += 'Good luck! Have Fun!'
+    return message
 
 
 class Participant(object):
@@ -42,6 +64,12 @@ class Participant(object):
     def __str__(self):
         """ Shows participant info when casted to string. """
         return self.__name + ' (' + self.__mail + ')'
+
+    def mail_santa(self, target):
+        """ Send to the secret santa its target. """
+        if not isinstance(target, Participant):
+            raise TypeError('Error: Target is not a participant.')
+        send('', self.mail, SUBJECT, generate_message(str(target)))
 
 
 def participants_parser(csv_file):
@@ -113,3 +141,14 @@ def participants_shuffler(participants):
     couples = zip(participants, participants[1:] + [participants[0]])
 
     return couples
+
+
+def participants_mail(couples):
+    """
+    Mail all the secret Santas.
+
+    Args:
+        couples: The couples secret santa / target.
+    """
+    for couple in couples:
+        couple[0].mail_santa(couple[1])
