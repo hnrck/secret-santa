@@ -138,7 +138,7 @@ def participants_shuffler(participants):
         raise AssertionError('It\'s not fun to play alone :-(')
 
     shuffle(participants)
-    couples = zip(participants, participants[1:] + [participants[0]])
+    couples = list(zip(participants, participants[1:] + [participants[0]]))
 
     return couples
 

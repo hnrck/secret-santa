@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 
 """
@@ -8,7 +8,6 @@ Take a list of partipants in a CSV file, create the secret santa couples, and
 send messages.
 """
 
-
 from sys import argv, stderr
 from participant import participants_parser
 from participant import participants_shuffler
@@ -17,12 +16,12 @@ from participant import participants_mail
 
 def help_message():
     """ Help message. """
-    print >> stderr, ""
-    print >> stderr, argv[0], "<participant_file>.csv"
-    print >> stderr, ""
-    print >> stderr, "\twhere participant file contains lines like this:"
-    print >> stderr, "\t\t<firstname> <name>, <mail@mail.mail>."
-    print >> stderr, ""
+    print("", file=stderr)
+    print(argv[0], "<participant_file>.csv", file=stderr)
+    print("", file=stderr)
+    print("\twhere participant file contains lines like this:", file=stderr)
+    print("\t\t<firstname> <name>, <mail@mail.mail>.", file=stderr)
+    print("", file=stderr)
 
 
 def main():
@@ -42,9 +41,10 @@ def main():
     couples = participants_shuffler(participants)
     participants_mail(couples)
 
+
 if __name__ == '__main__':
     try:
         main()
-    except AssertionError, err:
-        print >> stderr, str(err)
+    except AssertionError as err:
+        print(str(err), file=stderr)
         help_message()

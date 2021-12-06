@@ -35,8 +35,8 @@ def delete_message(service, user_id, msg_id):
     """
     try:
         service.users().messages().delete(userId=user_id, id=msg_id).execute()
-    except errors.HttpError, error:
-        print >> stderr, 'An error occurred: %s' % error
+    except errors.HttpError as error:
+        print('An error occurred: %s' % error, file=stderr)
 
 
 def get_credentials():
@@ -48,10 +48,7 @@ def get_credentials():
     """
     home_dir = os.path.expanduser('~')
     credential_dir = os.path.join(home_dir, '.credentials')
-    if not os.path.exists(credential_dir):
-        os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir,
-                                   'gmail-python-email-send.json')
+    credential_path = os.path.join(credential_dir, 'gmail-python-email-send.json')
     store = oauth2client.file.Storage(credential_path)
     credentials = store.get()
     if not credentials or credentials.invalid:
@@ -80,8 +77,8 @@ def send_message(service, user_id, message):
         )
         delete_message(service, user_id, message['id'])
         return message
-    except errors.HttpError, error:
-        print >> stderr, 'An error occurred: %s' % error
+    except errors.HttpError as error:
+        print('An error occurred: %s' % error, file=stderr)
 
 
 def create_message(sender, receiver, subject, message_text):
@@ -98,11 +95,11 @@ def create_message(sender, receiver, subject, message_text):
         An object containing a base64url encoded email object.
     """
 
-    message = MIMEText(message_text)
+    message: MIMEText = MIMEText(message_text)
     message['Subject'] = subject
     message['From'] = sender
     message['To'] = receiver
-    return {'raw': base64.urlsafe_b64encode(message.as_string())}
+    return {'raw': message.as_string()}
 
 
 def send(sender, receiver, subject, message_text):
