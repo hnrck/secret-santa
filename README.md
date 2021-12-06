@@ -10,7 +10,7 @@ Gmail API google-api-python-client is needed. [Google API webpage](https://devel
 
 You can use:
 
-    $ ./dependancies.sh
+    $ python -m pip install -r requirements.txt
 
 ## Tests
 
