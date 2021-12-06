@@ -1,5 +1,3 @@
-#!/usr/bin/env python2.7
-
 """
 Mailer.
 
@@ -8,18 +6,19 @@ https://developers.google.com/gmail/api/v1/reference/users/messages/send
 and
 https://developers.google.com/gmail/api/v1/reference/users/messages/delete
 """
+import base64
 
 import httplib2
 import os
-import oauth2client
-from oauth2client import client, tools
-import base64
-from email.mime.multipart import MIMEMultipart
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 from email.mime.text import MIMEText
 from apiclient import errors, discovery
 from sys import stderr
 
-SCOPES = 'https://mail.google.com'
+SCOPES = 'https://mail.google.com/'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Gmail API Python Send Email'
 
@@ -49,12 +48,26 @@ def get_credentials():
     home_dir = os.path.expanduser('~')
     credential_dir = os.path.join(home_dir, '.credentials')
     credential_path = os.path.join(credential_dir, 'gmail-python-email-send.json')
-    store = oauth2client.file.Storage(credential_path)
-    credentials = store.get()
-    if not credentials or credentials.invalid:
-        flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
-        flow.user_agent = APPLICATION_NAME
-        credentials = tools.run_flow(flow, store)
+    credentials = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists('token.json'):
+        credentials = Credentials.from_authorized_user_file('token.json', SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not credentials or not credentials.valid:
+        if credentials and credentials.expired and credentials.refresh_token:
+            credentials.refresh(Request())
+        else:
+            home_dir = os.path.expanduser('~')
+            credential_dir = os.path.join(home_dir, '.credentials')
+            credential_path = os.path.join(credential_dir, 'gmail-python-email-send.json')
+            flow = InstalledAppFlow.from_client_secrets_file(credential_path, SCOPES)
+            credentials = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.json', 'w') as token:
+            token.write(credentials.to_json())
+
     return credentials
 
 
@@ -99,14 +112,13 @@ def create_message(sender, receiver, subject, message_text):
     message['Subject'] = subject
     message['From'] = sender
     message['To'] = receiver
-    return {'raw': message.as_string()}
+    return {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
 
 def send(sender, receiver, subject, message_text):
     """ Main function. """
     message = create_message(sender, receiver, subject, message_text)
     credentials = get_credentials()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('gmail', 'v1', http=http)
+    service = discovery.build('gmail', 'v1', credentials=credentials)
     user_id = "me"
     send_message(service, user_id, message)
