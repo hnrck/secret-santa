@@ -8,27 +8,6 @@ from csv import reader
 from random import shuffle
 from mailer import send
 
-SUBJECT = 'Hello secret Santa! This is your secret target!'
-
-
-def generate_message(target):
-    """
-    Generate a message for the secret Santa
-
-    Args:
-        target: the name and mail of the secret Santa target
-
-    Returns:
-        message: a string containing the message.
-    """
-    message = ''
-    message += 'Hi secret Santa!\n'
-    message += '\n'
-    message += 'Your target is ' + target + '.'
-    message += '\n'
-    message += 'Good luck! Have Fun!'
-    return message
-
 
 class Participant(object):
     """
@@ -69,7 +48,8 @@ class Participant(object):
         """ Send to the secret santa its target. """
         if not isinstance(target, Participant):
             raise TypeError('Error: Target is not a participant.')
-        send('', self.mail, SUBJECT, generate_message(str(target)))
+        send('', self.mail, f'Hello {self.name}! This is your secret target!',
+             f"Hi {self.name}!\n\nYou are {target.name}'s secret santa!\n\nGood luck! Have Fun!")
 
 
 def participants_parser(csv_file):
@@ -150,5 +130,6 @@ def participants_mail(couples):
     Args:
         couples: The couples secret santa / target.
     """
-    for couple in couples:
-        couple[0].mail_santa(couple[1])
+    for participant, target in couples:
+        print(f"Sending {participant.name} target")
+        participant.mail_santa(target)
