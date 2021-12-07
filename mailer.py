@@ -18,7 +18,7 @@ from email.mime.text import MIMEText
 from apiclient import errors, discovery
 from sys import stderr
 
-SCOPES = 'https://mail.google.com/'
+SCOPES = ['https://mail.google.com/']
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Gmail API Python Send Email'
 
