@@ -1,7 +1,7 @@
 """
 Mailer.
 
-Most of these functions are not mine and comes from:
+Most of these functions are not mine and come from:
 https://developers.google.com/gmail/api/v1/reference/users/messages/send
 and
 https://developers.google.com/gmail/api/v1/reference/users/messages/delete
